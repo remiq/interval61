@@ -1,0 +1,322 @@
+var dd;
+var Timer = Backbone.Model.extend({
+    defaults: {
+        time_started: 0
+        ,time_changed: 0
+        ,time_tracked: 0
+        ,state: 'off'
+        ,project: ''
+        ,feature: ''
+    }
+    ,render: function()
+    {
+        var el = ich.timer({
+            id: this.cid
+            ,state: this.get("state")
+            ,project: this.get("project")
+            ,feature: this.get("feature")
+        });
+        $('#timers').prepend(el);
+        $('#timer-'+this.cid).slideDown();
+        this.on("change:state", this.onChangeState);
+    }
+    ,onChangeState: function(model, new_state)
+    {
+        $('#timer-'+model.cid).removeClass('timer-off').removeClass('timer-on').removeClass('timer-pause').addClass('timer-'+new_state);
+    }
+    ,doStart: function()
+    {
+        var now = moment();
+        if (this.get("time_started") == 0)
+        {
+            this.set("time_started", now);
+        }
+        this.set("time_changed", now);
+        this.set("state", 'on');
+    }
+    ,doPause: function()
+    {
+        var now = moment();
+        var time_diff = now - this.get("time_changed");
+        this.set("time_tracked", this.get("time_tracked") + time_diff);
+        this.set("time_changed", now);
+        this.set("state", 'pause');
+    }
+    ,doStop: function()
+    {
+        var now = moment();
+        if (this.get("state") == 'on')
+        {
+            var time_diff = now - this.get("time_changed");
+            this.set("time_tracked", this.get("time_tracked") + time_diff);
+        }
+        this.set("time_changed", now);
+        this.set("state", 'on');
+        tt.addNewTimeslot(
+            this.get("time_started"),
+            now,
+            this.get("time_tracked"),
+            $('#timer-'+this.cid+' .form-project').val(),
+            $('#timer-'+this.cid+' .form-feature').val()
+        );
+        tt.destroyTimer(this.cid);
+    }
+    ,doUpdate: function()
+    {
+        var now = moment();
+        var SECOND = 1000;
+        var MINUTE = 60 * SECOND;
+        var HOUR = MINUTE * 60;
+        var time_diff = now - this.get("time_changed");
+        var time_tracked = this.get("time_tracked");
+        if (this.get("state") == 'on')
+        {
+            time_tracked += time_diff;
+        }
+        var hours = Math.floor(time_tracked / HOUR);
+        time_tracked -= hours * HOUR;
+        var minutes = Math.floor(time_tracked / MINUTE);
+        time_tracked -= minutes * MINUTE;
+        var seconds = Math.floor(time_tracked / SECOND);
+        if (hours < 10)
+        {
+            hours = '0'+hours;
+        }
+        if (minutes < 10)
+        {
+            minutes = '0'+minutes;
+        }
+        if (seconds < 10)
+        {
+            seconds = '0'+seconds;
+        }
+        var time_string = hours + ':' + minutes + '.' + seconds;
+        $('#timer-'+this.cid+' .form-counter').val(time_string);
+    }
+});
+var Timeslot = Backbone.Model.extend({
+    defaults: {
+        time_start: null
+        ,time_end: null
+        ,time_track: null
+        ,project: ''
+        ,feature: ''
+    }
+    ,formatString: "YYYY-MM-DD HH:mm:ss"
+    ,render: function()
+    {
+        var now = moment();
+        var SECOND = 1000;
+        var MINUTE = 60 * SECOND;
+        var HOUR = MINUTE * 60;
+        var time_track = this.get("time_track");
+        var hours = Math.floor(time_track / HOUR);
+        time_track -= hours * HOUR;
+        var minutes = Math.floor(time_track / MINUTE);
+        time_track -= minutes * MINUTE;
+        var seconds = Math.floor(time_track / SECOND);
+        var time_diff = "";
+        if (hours)
+        {
+            time_diff += hours + " hour";
+            if (hours > 1) {
+                time_diff += "s";
+            }
+            time_diff += " ";
+        }
+        if (minutes)
+        {
+            time_diff += minutes + " minute";
+            if (minutes > 1) {
+                time_diff += "s";
+            }
+            time_diff += " ";
+        }
+        if (seconds)
+        {
+            time_diff += seconds + " second";
+            if (seconds > 1) {
+                time_diff += "s";
+            }
+            time_diff += " ";
+        }
+
+        var el = ich.timeslot({
+            id: this.cid
+            ,time_start: this.get("time_start").format(this.formatString)
+            ,time_end: this.get("time_end").format(this.formatString)
+            ,project: this.get("project")
+            ,feature: this.get("feature")
+            ,time_track: time_diff
+        });
+        $('#timeslots').prepend(el);
+        $('#timeslot-'+this.cid).slideDown();
+    }
+});
+var tt = {
+    timers: {}
+    ,timeslots: {}
+    ,timer_active: null
+    ,onLoad: function()
+    {
+        this.loadLocal();
+        // XXX: pobranie timerów z localStorage
+        // XXX: wyświetlenie timerów
+        this.isEnoughTimers();
+        window.setInterval(tt.timerEvent, 1000);
+    }
+    ,isEnoughTimers: function()
+    {
+        if (_.keys(tt.timers).length < 1)
+        {
+            tt.addNewTimer();
+        }
+    }
+    ,timerEvent: function()
+    {
+        if (tt.timer_active)
+        {
+            tt.timer_active.doUpdate();
+        }
+    }
+    ,addNewTimer: function(project, feature)
+    {
+        var timer = new Timer({
+            project: project
+            ,feature: feature
+        });
+        tt.timers[timer.cid] = timer;
+        timer.render();
+        tt.refreshTypeahead();
+        return timer;
+    }
+    ,addExistingTimer: function(timer)
+    {
+        timer.render();
+        timer.doUpdate();
+        tt.refreshTypeahead();
+    }
+    ,destroyTimer: function(cid)
+    {
+        $('#timer-'+cid).slideUp();
+        delete(tt.timers[cid]);
+        this.isEnoughTimers();
+    }
+    ,addNewTimeslot: function(time_started, time_ended, time_tracked, project, feature)
+    {
+        var timeslot = new Timeslot({
+            time_start: time_started
+            ,time_end: time_ended
+            ,time_track: time_tracked
+            ,project: project
+            ,feature: feature
+        });
+        tt.timeslots[timeslot.cid] = timeslot;
+        timeslot.render();
+    }
+    ,addExistingTimeslot: function (time_slot)
+    {
+        time_slot.render();
+    }
+    ,refreshTypeahead: function()
+    {
+        $('.form-project').typeahead({
+            'source' : ['Project A', 'Project B', 'Project C']
+        });
+        $('.form-feature').typeahead({
+            'source': ['Feature X', 'Feature Y', 'Feature Z']
+        });
+    }
+    ,loadLocal: function()
+    {
+        if (localStorage['timers'])
+        {
+            var timers = JSON.parse(localStorage['timers']);
+            _.each(timers, function(timer_data) {
+                timer_data.time_started = moment(timer_data.time_started);
+                timer_data.time_changed = moment(timer_data.time_changed);
+                var timer = new Timer(timer_data);
+                tt.timers[timer.cid] = timer;
+                if (timer.get("state") == 'on')
+                {
+                    tt.timer_active = timer;
+                }
+                tt.addExistingTimer(timer);
+            });
+        }
+        if (localStorage['timeslots'])
+        {
+            var time_slots = JSON.parse(localStorage['timeslots']);
+            _.each(time_slots, function(time_slot_data) {
+                time_slot_data.time_start = moment(time_slot_data.time_start);
+                time_slot_data.time_end = moment(time_slot_data.time_end);
+                var time_slot = new Timeslot(time_slot_data);
+                tt.timeslots[time_slot.cid] = time_slot;
+                tt.addExistingTimeslot(time_slot);
+            });
+        }
+        if (!localStorage['timers'] && !localStorage['timeslots'])
+        {
+            tt.startDemo();
+        }
+    }
+    ,saveLocal: function()
+    {
+        localStorage['timers'] = JSON.stringify(tt.timers);
+        localStorage['timeslots'] = JSON.stringify(tt.timeslots);
+    }
+    ,startDemo: function()
+    {
+        var timer = this.addNewTimer('Self-improvement', 'Testing new TimeTracking tool!');
+        $('.demo').show();
+        tt.clickStart(timer.cid);
+    }
+    ,clickStart: function(cid)
+    {
+        if (this.timer_active)
+        {
+            this.timer_active.doPause();
+        }
+        var timer = tt.timers[cid];
+        this.timer_active = timer;
+        timer.doStart();
+        this.saveLocal();
+    }
+    ,clickPause: function(cid)
+    {
+        this.timer_active = null;
+        var timer = tt.timers[cid];
+        timer.doPause();
+        this.saveLocal();
+    }
+    ,clickStop: function(cid)
+    {
+        if (this.timer_active.cid == cid)
+        {
+            this.timer_active = null;
+        }
+        var timer = tt.timers[cid];
+        timer.doStop();
+        this.saveLocal();
+    }
+    ,clickRepeat: function (cid)
+    {
+        tt.addNewTimer($('#timeslot-'+cid+' .field-project').text(), $('#timeslot-'+cid+' .field-feature').text());
+    }
+    ,clickDelete: function (cid)
+    {
+        $('#timeslot-'+cid).slideUp();
+        delete(tt.timeslots[cid]);
+        this.saveLocal();
+    }
+    ,changeProject: function (cid, el)
+    {
+        this.timers[cid].set("project", el.value);
+        this.saveLocal();
+    }
+    ,changeFeature: function (cid, el)
+    {
+        this.timers[cid].set("feature", el.value);
+        this.saveLocal();
+    }
+};

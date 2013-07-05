@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TimeTracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+    <script src="js/underscore-min.js" type="text/javascript"></script>
+    <script src="js/jquery-2.0.3.min.js" type="text/javascript"></script>
+    <script src="js/backbone.js" type="text/javascript"></script>
+    <script src="js/ICanHaz.js" type="text/javascript"></script>
+    <script src="js/bootstrap.js" type="text/javascript"></script>
+    <script src="js/moment.js" type="text/javascript"></script>
+    <script src="js/tt.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="brand" href="#">TimeTracker</a>
+            <div class="nav-collapse collapse">
+                <ul class="nav" id="yw0">
+                    <li><a href="#" onclick="return tt.addNewTimer();">New timer</a></li>
+                </ul>            </div><!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 50px;">
+
+    <div id="content">
+
+        <script id="timer" type="text/html">
+            <div id="timer-{{ id }}" class="timer timer-{{ state }} alert" style="display: none;">
+                <form class="form-inline">
+                    <input type="text"
+                           name="form[{{ id }}][project]"
+                           placeholder="-- Project --"
+                           data-provide="typeahead"
+                           class="form-project"
+                           onchange="return tt.changeProject('{{id}}', this)" value="{{ project }}">
+                    <input type="text"
+                           name="form[{{ id }}][feature]"
+                           placeholder="-- Feature --"
+                           data-provide="typeahead"
+                           class="form-feature"
+                           onchange="return tt.changeFeature('{{id}}', this)" value="{{ feature }}">
+                    <input type="text" value="00:00.00" class="input-mini form-counter">
+                    <button onclick="return tt.clickStart('{{ id }}');" type="button" class="btn-start btn btn-success"><i class="icon-play icon-white"></i> Start</button>
+                    <button onclick="return tt.clickPause('{{ id }}');" type="button" class="btn-pause btn"><i class="icon-pause"></i> Pause</button>
+                    <button onclick="return tt.clickStop('{{ id }}');" type="button" class="btn-stop btn btn-danger"><i class="icon-stop icon-white"></i> Stop</button>
+                </form>
+            </div>
+        </script>
+        <script id="timeslot" type="text/html">
+            <tr id="timeslot-{{ id }}" style="display: none;">
+                <td>{{ time_start }}</td>
+                <td>{{ time_end }}</td>
+                <td><span class="editable field-project">{{ project }}</span></td>
+                <td><span class="editable field-feature">{{ feature }}</span></td>
+                <td><span class="editable">{{ time_track }}</span></td>
+                <td>
+                    <a href="#" onclick="return tt.clickRepeat('{{ id }}');" class="link-btn link-repeat"><i class="icon-repeat"></i></a>
+                    <a href="#" onclick="return tt.clickDelete('{{ id }}');" class="link-btn link-delete"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+        </script>
+        <style type="text/css">
+            .timer-off {
+                background-color: #F5F5F5;
+                border-color: #B3B3B3;
+                color: #333333;
+            }
+            .timer-on {
+                background-color: #DFF0D8;
+                border-color: #D6E9C6;
+                color: #468847;
+            }
+            .timer-pause {
+                background-color: #D9EDF7;
+                border-color: #BCE8F1;
+                color: #3A87AD;
+            }
+            .timer-off .form-feature {
+                width: 55%;
+            }
+            .timer-off .btn-pause, .timer-off .btn-stop {
+                display: none;
+            }
+            .timer-on .form-feature, .timer-pause .form-feature {
+                width: 45%
+            }
+            .timer-on .btn-start {
+                display: none;
+            }
+            .timer-pause .btn-pause {
+                display: none;
+            }
+            #timers form {
+                margin-bottom: 0px;
+            }
+            .link-btn
+            {
+                padding: 5px;
+            }
+            .demo
+            {
+                display: none;
+                position: relative;
+            }
+                /*
+                .editable:hover
+                {
+                    cursor: pointer;
+                }
+                .editable:hover:after
+                {
+                    content: '\00BB'
+                }
+                */
+
+        </style>
+        <h1>Welcome to <i>TimeTracker</i></h1>
+
+        <div id="timers">
+            <!-- Timers -->
+            <div class="demo alert alert-info">
+                I've made a timer for you to measure how much time you will use to learn it. Feel free to use it.
+                <div style="position: absolute; right: 110px; top: 0px"><i class="icon-arrow-up"></i></div>
+            </div>
+        </div>
+        <div>
+            <!-- Logged time slots -->
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Time started</th>
+                    <th>Time ended</th>
+                    <th>Project</th>
+                    <th>Feature</th>
+                    <th>Tracked</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody id="timeslots">
+                <tr class="demo">
+                    <td colspan="6" style="text-align: center;">
+                        This is a place for your logged time slots!
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // alert('OK');
+                tt.onLoad();
+            });
+        </script></div><!-- content -->
+
+</div> <!-- /container -->
+
+</body>
+</html>
