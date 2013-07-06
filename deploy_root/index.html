@@ -54,14 +54,41 @@
     <tr id="timeslot-{{ id }}" style="display: none;">
         <td>{{ time_start }}</td>
         <td>{{ time_end }}</td>
-        <td><span class="editable field-project">{{ project }}</span></td>
-        <td><span class="editable field-feature">{{ feature }}</span></td>
-        <td><span class="editable">{{ time_track }}</span></td>
+        <td onclick="return tt.clickEdit('{{ id }}');" class="editable"><span class="field-project">{{ project }}</span></td>
+        <td onclick="return tt.clickEdit('{{ id }}');" class="editable"><span class="field-feature">{{ feature }}</span></td>
+        <td><span class="">{{ time_track }}</span></td>
         <td>
             <a href="#" onclick="return tt.clickRepeat('{{ id }}');" class="link-btn link-repeat"><i class="icon-repeat"></i></a>
             <a href="#" onclick="return tt.clickDelete('{{ id }}');" class="link-btn link-delete"><i class="icon-trash"></i></a>
         </td>
     </tr>
+</script>
+<script id="modalTimeSlot" type="text/html">
+    <div id="mTimeSlot" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="labelTimeSlot" aria-hidden="true">
+        <div class="modal-header">
+            <h3 id="labelTimeSlot">Edit Time Slot</h3>
+        </div>
+        <div class="modal-body" style="height: 300px;">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="fieldProject">Project</label>
+                    <div class="controls">
+                        <input type="text" id="fieldProject" value="{{ project }}" data-provide="typeahead">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="fieldFeature">Feature</label>
+                    <div class="controls">
+                        <input type="text" id="fieldFeature" value="{{ feature }}" data-provide="typeahead">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btn btn-primary" onclick="return tt.clickUpdate('{{ id }}')">Save changes</button>
+        </div>
+    </div>
 </script>
 <style type="text/css">
     .timer {
@@ -120,11 +147,11 @@
         margin-bottom: 10px;
         float: left;
     }
-        /*
-        .editable:hover
-        {
-            cursor: pointer;
-        }
+    .editable:hover
+    {
+        cursor: pointer;
+    }
+    /*
         .editable:hover:after
         {
             content: '\00BB'
@@ -173,6 +200,7 @@
                     </div>
                 </div>
                 <div>
+                    <div id="modal"></div>
                     <!-- Logged time slots -->
                     <table class="table table-hover">
                         <thead>

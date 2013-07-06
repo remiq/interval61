@@ -107,7 +107,7 @@ var Timeslot = Backbone.Model.extend({
         ,feature: ''
     }
     ,formatString: "YYYY-MM-DD HH:mm:ss"
-    ,render: function()
+    ,_render: function ()
     {
         var now = moment();
         var SECOND = 1000;
@@ -141,19 +141,30 @@ var Timeslot = Backbone.Model.extend({
             ,feature: this.get("feature")
             ,time_track: time_string
         });
-        $('#timeslots').prepend(el);
+        return el;
+    }
+    ,render: function ()
+    {
+        var element = this._render();
+        $('#timeslots').prepend(element);
         $('#timeslot-'+this.cid).slideDown();
+    }
+    ,renderUpdate: function ()
+    {
+        var element = this._render();
+        $('#timeslot-'+this.cid).html(element.html());
     }
 });
 var tt = {
     timers: {}
     ,timeslots: {}
     ,timer_active: null
+    ,project_list: {}
+    ,feature_list: {}
     ,onLoad: function()
     {
         this.loadLocal();
-        // XXX: pobranie timerów z localStorage
-        // XXX: wyświetlenie timerów
+        this.refreshProjectsAndFeatures();
         this.isEnoughTimers();
         window.setInterval(tt.timerEvent, 1000);
     }
@@ -215,13 +226,25 @@ var tt = {
     {
         time_slot.render();
     }
+    ,refreshProjectsAndFeatures: function()
+    {
+        tt.project_list = {};
+        tt.feature_list = {};
+        _.each(this.timeslots, function (timeslot) {
+            tt.project_list[timeslot.get("project")] = 1;
+            tt.feature_list[timeslot.get("feature")] = 1;
+        });
+        tt.refreshTypeahead();
+    }
     ,refreshTypeahead: function()
     {
+        var project_arr = _.keys(tt.project_list);
+        var feature_arr = _.keys(tt.feature_list);
         $('.form-project').typeahead({
-            'source' : ['Project A', 'Project B', 'Project C']
+            'source' : project_arr
         });
         $('.form-feature').typeahead({
-            'source': ['Feature X', 'Feature Y', 'Feature Z']
+            'source': feature_arr
         });
     }
     ,loadLocal: function()
@@ -295,6 +318,7 @@ var tt = {
         var timer = tt.timers[cid];
         timer.doStop();
         this.saveLocal();
+        this.refreshProjectsAndFeatures();
     }
     ,clickAbort: function(cid)
     {
@@ -305,6 +329,35 @@ var tt = {
         var timer = tt.timers[cid];
         timer.doAbort();
         this.saveLocal();
+    }
+    ,clickEdit: function (cid)
+    {
+        var time_slot = tt.timeslots[cid];
+        var element = ich.modalTimeSlot({
+            id: time_slot.cid
+            ,project: time_slot.get("project")
+            ,feature: time_slot.get("feature")
+        });
+        $('#modal').html(element);
+        var project_arr = _.keys(tt.project_list);
+        var feature_arr = _.keys(tt.feature_list);
+        $('#fieldProject').typeahead({
+            'source' : project_arr
+        });
+        $('#fieldFeature').typeahead({
+            'source': feature_arr
+        });
+        $('#mTimeSlot').modal();
+    }
+    ,clickUpdate: function (cid)
+    {
+        var time_slot = tt.timeslots[cid];
+        time_slot.set("project", $('#fieldProject').val());
+        time_slot.set("feature", $('#fieldFeature').val());
+        time_slot.renderUpdate();
+        this.saveLocal();
+        this.refreshProjectsAndFeatures();
+        $('#mTimeSlot').modal('hide');
     }
     ,clickRepeat: function (cid)
     {
