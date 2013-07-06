@@ -61,6 +61,10 @@ var Timer = Backbone.Model.extend({
         );
         tt.destroyTimer(this.cid);
     }
+    ,doAbort: function()
+    {
+        tt.destroyTimer(this.cid);
+    }
     ,doUpdate: function()
     {
         var now = moment();
@@ -290,6 +294,16 @@ var tt = {
         }
         var timer = tt.timers[cid];
         timer.doStop();
+        this.saveLocal();
+    }
+    ,clickAbort: function(cid)
+    {
+        if (this.timer_active && this.timer_active.cid == cid)
+        {
+            this.timer_active = null;
+        }
+        var timer = tt.timers[cid];
+        timer.doAbort();
         this.saveLocal();
     }
     ,clickRepeat: function (cid)
