@@ -190,6 +190,11 @@ var tt = {
         tt.refreshTypeahead();
         return timer;
     }
+    ,addNewTimerAndStart: function(project, feature)
+    {
+        var timer = tt.addNewTimer(project, feature);
+        tt.clickStart(timer.cid);
+    }
     ,addExistingTimer: function(timer)
     {
         timer.render();
@@ -291,7 +296,7 @@ var tt = {
     }
     ,clickStop: function(cid)
     {
-        if (this.timer_active.cid == cid)
+        if (this.timer_active && this.timer_active.cid == cid)
         {
             this.timer_active = null;
         }
