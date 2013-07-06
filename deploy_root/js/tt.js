@@ -115,31 +115,19 @@ var Timeslot = Backbone.Model.extend({
         var minutes = Math.floor(time_track / MINUTE);
         time_track -= minutes * MINUTE;
         var seconds = Math.floor(time_track / SECOND);
-        var time_diff = "";
-        if (hours)
+        if (hours < 10)
         {
-            time_diff += hours + " hour";
-            if (hours > 1) {
-                time_diff += "s";
-            }
-            time_diff += " ";
+            hours = '0'+hours;
         }
-        if (minutes)
+        if (minutes < 10)
         {
-            time_diff += minutes + " minute";
-            if (minutes > 1) {
-                time_diff += "s";
-            }
-            time_diff += " ";
+            minutes = '0'+minutes;
         }
-        if (seconds)
+        if (seconds < 10)
         {
-            time_diff += seconds + " second";
-            if (seconds > 1) {
-                time_diff += "s";
-            }
-            time_diff += " ";
+            seconds = '0'+seconds;
         }
+        var time_string = hours + ':' + minutes + '.' + seconds;
 
         var el = ich.timeslot({
             id: this.cid
@@ -147,7 +135,7 @@ var Timeslot = Backbone.Model.extend({
             ,time_end: this.get("time_end").format(this.formatString)
             ,project: this.get("project")
             ,feature: this.get("feature")
-            ,time_track: time_diff
+            ,time_track: time_string
         });
         $('#timeslots').prepend(el);
         $('#timeslot-'+this.cid).slideDown();
