@@ -238,13 +238,15 @@ var tt = {
     }
     ,refreshTypeahead: function()
     {
-        var project_arr = _.keys(tt.project_list);
-        var feature_arr = _.keys(tt.feature_list);
         $('.form-project').typeahead({
-            'source' : project_arr
+            source: function (query, process) {
+                process(_.keys(tt.project_list));
+            }
         });
         $('.form-feature').typeahead({
-            'source': feature_arr
+            'source': function (query, process) {
+                process(_.keys(tt.feature_list));
+            }
         });
     }
     ,loadLocal: function()
@@ -362,12 +364,14 @@ var tt = {
     ,clickRepeat: function (cid)
     {
         tt.addNewTimer($('#timeslot-'+cid+' .field-project').text(), $('#timeslot-'+cid+' .field-feature').text());
+        return false;
     }
     ,clickDelete: function (cid)
     {
         $('#timeslot-'+cid).slideUp();
         delete(tt.timeslots[cid]);
         this.saveLocal();
+        return false;
     }
     ,changeProject: function (cid, el)
     {

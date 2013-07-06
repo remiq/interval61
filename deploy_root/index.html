@@ -39,12 +39,14 @@
                    placeholder="-- Project --"
                    data-provide="typeahead"
                    class="form-project"
+                   autocomplete="off"
                    onchange="return tt.changeProject('{{id}}', this)" value="{{ project }}">
             <input type="text"
                    name="form[{{ id }}][feature]"
                    placeholder="-- Feature --"
                    data-provide="typeahead"
                    class="form-feature"
+                   autocomplete="off"
                    onchange="return tt.changeFeature('{{id}}', this)" value="{{ feature }}">
             <input type="text" value="00:00.00" class="input-mini form-counter">
         </form>
