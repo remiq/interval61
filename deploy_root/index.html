@@ -8,6 +8,9 @@
     <meta name="author" content="">
 
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="css/mobile-480.css" />
+
     <script src="js/underscore-min.js" type="text/javascript"></script>
     <script src="js/jquery-2.0.3.min.js" type="text/javascript"></script>
     <script src="js/backbone.js" type="text/javascript"></script>
@@ -15,6 +18,7 @@
     <script src="js/bootstrap.js" type="text/javascript"></script>
     <script src="js/moment.js" type="text/javascript"></script>
     <script src="js/tt.js" type="text/javascript"></script>
+    <link rel="icon" href="img/icon.ico" sizes="16x16" />
 </head>
 
 <body>
@@ -34,6 +38,7 @@
                     </ul>
                 </div>
             </div>
+            <input type="text" value="00:00.00" class="input-mini form-counter">
             <input type="text"
                    name="form[{{ id }}][project]"
                    placeholder="-- Project --"
@@ -48,14 +53,17 @@
                    class="form-feature"
                    autocomplete="off"
                    onchange="return tt.changeFeature('{{id}}', this)" value="{{ feature }}">
-            <input type="text" value="00:00.00" class="input-mini form-counter">
+
         </form>
     </div>
 </script>
 <script id="timeslot" type="text/html">
     <tr id="timeslot-{{ id }}" style="display: none;">
-        <td>{{ time_start }}</td>
-        <td>{{ time_end }}</td>
+        <td class="timeslot-col-accept">
+            <a href="#" onclick="tt.clickAccept('');" class="link-btn link-accept"><i class="icon-check"></i></a>
+        </td>
+        <td class="timeslot-col-time-start">{{ time_start }}</td>
+        <td class="timeslot-col-time-end">{{ time_end }}</td>
         <td onclick="return tt.clickEdit('{{ id }}');" class="editable"><span class="field-project">{{ project }}</span></td>
         <td onclick="return tt.clickEdit('{{ id }}');" class="editable"><span class="field-feature">{{ feature }}</span></td>
         <td><span class="">{{ time_track }}</span></td>
@@ -92,94 +100,28 @@
         </div>
     </div>
 </script>
-<style type="text/css">
-    .timer {
-        padding: 8px;
-    }
-    .btn-panel {
-        display: inline-block;
-        width: 205px;
-    }
-    .timer-off {
-        background-color: #F5F5F5;
-        border-color: #B3B3B3;
-        color: #333333;
-    }
-    .timer-on {
-        background-color: #DFF0D8;
-        border-color: #D6E9C6;
-        color: #468847;
-    }
-    .timer-pause {
-        background-color: #D9EDF7;
-        border-color: #BCE8F1;
-        color: #3A87AD;
-    }
-    .timer-off .form-feature {
-        width: 43%;
-    }
-    .timer-off .btn-pause, .timer-off .btn-stop {
-        display: none;
-    }
-    .timer-on .form-feature, .timer-pause .form-feature {
-        width: 43%
-    }
-    .timer-on .btn-start {
-        display: none;
-    }
-    .timer-pause .btn-pause {
-        display: none;
-    }
-    #timers form {
-        margin-bottom: 0px;
-    }
-    .time-slot-action {
-        width: 55px;
-    }
-    .link-btn
-    {
-        padding: 5px;
-    }
-    .demo
-    {
-        display: none;
-        position: relative;
-    }
-    .toolbar {
-        margin-bottom: 10px;
-        float: left;
-    }
-    .editable:hover
-    {
-        cursor: pointer;
-    }
-    /*
-        .editable:hover:after
-        {
-            content: '\00BB'
-        }
-        */
-
-</style>
 
 <div class="container">
-    <div class="row">
+    <div class="row header-row">
         <div class="span8">
-            //<br>//<br>//
+            You are currently <a href="#">not logged in</a>. That's good, you can't log in, yet.
         </div>
         <div class="span3">
-            Created by Kyon
+            &nbsp;
         </div>
     </div>
 </div>
 <div class="container">
-    <div class="tabbable">
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="#tracker" data-toggle="tab">Time Tracker</a></li>
-            <li><a href="#reports" data-toggle="tab">Reports</a></li>
-            <li><a href="#faq" data-toggle="tab">FAQ</a></li>
-            <li><a href="#contact" data-toggle="tab">Contact</a></li>
+    <div class="tabbable" style="position: relative">
+        <ul class="nav nav-tabs nav-main">
+            <li class="active"><a href="#tracker" data-toggle="tab"><i class="icon-time"></i><span class="nav-main-label"> Record</span></a></li>
+            <li><a href="#reports" data-toggle="tab"><i class="icon-book"></i><span class="nav-main-label"> Analyze</span></a></li>
+            <li style="display: none;"><a href="#settings" data-toggle="tab"><i class="icon-cog"></i><span class="nav-main-label"> Settings</span></a></li>
+            <li><a href="#faq" data-toggle="tab"><i class="icon-question-sign"></i><span class="nav-main-label"> About</span></a></li>
         </ul>
+        <div class="logo">
+            <img src="img/logo.png" height="80">
+        </div>
         <div class="tab-content">
             <div class="tab-pane active" id="tracker">
                 <div class="toolbar">
@@ -193,7 +135,7 @@
                         </ul>
                     </div>
                 </div>
-                <div style="clear: both;">&nbsp;</div>
+                <div style="clear: both; height: 0px;">&nbsp;</div>
                 <div id="timers">
                     <!-- Timers -->
                     <div class="demo alert alert-info">
@@ -207,8 +149,9 @@
                     <table class="table table-hover">
                         <thead>
                         <tr>
-                            <th>Time started</th>
-                            <th>Time ended</th>
+                            <th>&nbsp;</th>
+                            <th class="timeslot-col-time-start">Time started</th>
+                            <th class="timeslot-col-time-end">Time ended</th>
                             <th>Project</th>
                             <th>Feature</th>
                             <th>Tracked</th>
@@ -225,27 +168,77 @@
                     </table>
                 </div>
             </div>
+            <div class="tab-pane" id="tags">
+                //
+            </div>
             <div class="tab-pane" id="reports">
-                Soon...
+                <ul class="nav nav-pills">
+                    <li class="active"><a href="#tutorial" data-toggle="tab">Tutorial</a></li>
+                    <li><a href="#report-group-today" data-toggle="tab">Today</a></li>
+                    <li><a href="#report-group-yesterday" data-toggle="tab">Yesterday</a></li>
+                    <li><a href="#report-group-this-week" data-toggle="tab">This week</a></li>
+                    <li><a href="#report-group-last-week" data-toggle="tab">Last week</a></li>
+                    <li><a href="#report-group-all-time" data-toggle="tab">All time</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tutorial">
+                        Tutorial
+                    </div>
+                    <div class="tab-pane" id="report-group-today">
+                        //
+                    </div>
+                    <div class="tab-pane" id="report-group-yesterday">
+                        ///
+                    </div>
+                    <div class="tab-pane" id="report-group-this-week">
+                        ////
+                    </div>
+                    <div class="tab-pane" id="report-group-last-week">
+                        /////
+                    </div>
+                    <div class="tab-pane" id="report-group-all-time">
+                        //////
+                    </div>
+                </div>
             </div>
             <div class="tab-pane" id="faq">
+                <h1>About Interval61</h1>
+                <p>
+                    Interval61
+                </p>
                 <h1>FAQ - Frequently Asked Questions</h1>
                 <h3>Can I use it to track my commercial work?</h3>
                 <p>Yes.</p>
                 <h3>What will you do with my data?</h3>
-                <p>Nothing. No data has been sent to me. All data you've entered was saved in your web browser.</p>
+                <p>
+                    Nothing. No data has been sent to me. All data you've entered was saved in your web browser.
+                </p>
             </div>
-            <div class="tab-pane" id="contact">
-                Contact
+            <div class="tab-pane" id="settings">
+                // import / export
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
     $(document).ready(function() {
-        // alert('OK');
         tt.onLoad();
+        (function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/rJ11bBQ5zd8lKv3Vw6Q.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()
+        UserVoice = window.UserVoice || [];
+        UserVoice.push(['showTab', 'classic_widget', {
+            mode: 'full',
+            primary_color: '#cc6d00',
+            link_color: '#007dbf',
+            default_mode: 'support',
+            forum_id: 214106,
+            tab_label: 'Feedback & Support',
+            tab_color: '#cc6d00',
+            tab_position: 'middle-right',
+            tab_inverted: false
+        }]);
     });
+
+
 </script>
 </body>
 </html>

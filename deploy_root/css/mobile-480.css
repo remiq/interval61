@@ -1,0 +1,64 @@
+@media (max-width: 800px)
+{
+    body div.container {
+        width: 100%;
+    }
+    .form-project
+    {
+        width:95%;
+        margin-top: 5px;
+    }
+    .timer-off .form-feature, .timer-on .form-feature, .timer-pause .form-feature
+    {
+        width: 95%;
+        margin-top: 2px;
+    }
+    .timeslot-col-time-end
+    {
+        display: none;
+    }
+}
+
+
+@media (max-width: 360px)
+{
+    body div.container {
+        width: 100%;
+    }
+    .form-project
+    {
+        width:95%;
+        margin-top: 5px;
+    }
+    .timer-off .form-feature, .timer-on .form-feature, .timer-pause .form-feature
+    {
+        width: 95%;
+        margin-top: 2px;
+    }
+    .timeslot-col-time-end
+    {
+        display: none;
+    }
+    .timeslot-col-time-start
+    {
+        display: none;
+    }
+    .link-delete
+    {
+        display: none;
+    }
+    #mTimeSlot
+    {
+        max-width: 300px;
+        margin-left: 0px;
+        left: 0px;
+    }
+    .form-horizontal .controls {
+        margin-left: 55px;
+    }
+    .form-horizontal .control-label {
+        width: auto;
+    }
+
+}
+

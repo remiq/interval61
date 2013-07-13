@@ -269,6 +269,7 @@ var tt = {
         if (localStorage['timeslots'])
         {
             var time_slots = JSON.parse(localStorage['timeslots']);
+            var i = 0;
             _.each(time_slots, function(time_slot_data) {
                 time_slot_data.time_start = moment(time_slot_data.time_start);
                 time_slot_data.time_end = moment(time_slot_data.time_end);
