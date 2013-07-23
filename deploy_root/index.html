@@ -60,7 +60,32 @@
 <script id="timeslot" type="text/html">
     <tr id="timeslot-{{ id }}" style="display: none;">
         <td class="timeslot-col-accept">
-            <a href="#" onclick="tt.clickAccept('');" class="link-btn link-accept"><i class="icon-check"></i></a>
+            <div class="btn-group">
+                <button class="btn link-archive" onclick="return tt.clickArchive('{{ id }}', 0);"><i class="icon-book"></i> Archive</button>
+                <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li class="nav-header">Rate effectiveness of a spent time</li>
+                    <li><a href="#" onclick="return tt.clickArchive('{{ id }}', 1);">
+                        <i class="icon-star"></i>
+                        Waste of time!
+                    </a></li>
+                    <li><a href="#" onclick="return tt.clickArchive('{{ id }}', 2);">
+                        <i class="icon-star"></i><i class="icon-star"></i>
+                    </a></li>
+                    <li><a href="#" onclick="return tt.clickArchive('{{ id }}', 3);">
+                        <i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i>
+                    </a></li>
+                    <li><a href="#" onclick="return tt.clickArchive('{{ id }}', 4);">
+                        <i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i>
+                    </a></li>
+                    <li><a href="#" onclick="return tt.clickArchive('{{ id }}', 5);">
+                        <i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i>
+                        Best time ever!
+                    </a></li>
+                </ul>
+            </div>
         </td>
         <td class="timeslot-col-time-start">{{ time_start }}</td>
         <td class="timeslot-col-time-end">{{ time_end }}</td>
@@ -115,7 +140,7 @@
     <div class="tabbable" style="position: relative">
         <ul class="nav nav-tabs nav-main">
             <li class="active"><a href="#tracker" data-toggle="tab"><i class="icon-time"></i><span class="nav-main-label"> Record</span></a></li>
-            <li><a href="#reports" data-toggle="tab"><i class="icon-book"></i><span class="nav-main-label"> Analyze</span></a></li>
+            <li><a href="#reports" data-toggle="tab" onclick="return tt.refreshGraph('daily');"><i class="icon-book"></i><span class="nav-main-label"> Analyze</span></a></li>
             <li style="display: none;"><a href="#settings" data-toggle="tab"><i class="icon-cog"></i><span class="nav-main-label"> Settings</span></a></li>
             <li><a href="#faq" data-toggle="tab"><i class="icon-question-sign"></i><span class="nav-main-label"> About</span></a></li>
         </ul>
@@ -166,53 +191,45 @@
                         </tr>
                         </tbody>
                     </table>
+                    <div class="tab-record-footer">
+                        <!-- place some text here -->
+                        <p>Archived time slots are in your browser memory for one month.</p>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane" id="tags">
                 //
             </div>
             <div class="tab-pane" id="reports">
-                <ul class="nav nav-pills">
-                    <li class="active"><a href="#tutorial" data-toggle="tab">Tutorial</a></li>
-                    <li><a href="#report-group-today" data-toggle="tab">Today</a></li>
-                    <li><a href="#report-group-yesterday" data-toggle="tab">Yesterday</a></li>
-                    <li><a href="#report-group-this-week" data-toggle="tab">This week</a></li>
-                    <li><a href="#report-group-last-week" data-toggle="tab">Last week</a></li>
-                    <li><a href="#report-group-all-time" data-toggle="tab">All time</a></li>
+                <ul id="graph_tab" class="nav nav-tabs nav-main">
+                    <li id="graph_tab_daily" class="active"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('daily');">Today</a></li>
+                    <li id="graph_tab_weekly"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('weekly');">This week</a></li>
+                    <li id="graph_tab_monthly"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('monthly');">This month</a></li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="tutorial">
-                        Tutorial
-                    </div>
-                    <div class="tab-pane" id="report-group-today">
-                        //
-                    </div>
-                    <div class="tab-pane" id="report-group-yesterday">
-                        ///
-                    </div>
-                    <div class="tab-pane" id="report-group-this-week">
-                        ////
-                    </div>
-                    <div class="tab-pane" id="report-group-last-week">
-                        /////
-                    </div>
-                    <div class="tab-pane" id="report-group-all-time">
-                        //////
+                    <div class="tab-pane active">
+                        <iframe id="iframe-graph" src="graph_daily.html" width="800" height="600" marginwidth="0" marginheight="0" scrolling="no"></iframe>
                     </div>
                 </div>
             </div>
             <div class="tab-pane" id="faq">
-                <h1>About Interval61</h1>
-                <p>
-                    Interval61
-                </p>
-                <h1>FAQ - Frequently Asked Questions</h1>
+                <h2>About Interval61</h2>
+                <div class="faq-box">
+                    <p>
+                        Interval61 is a <b>simple</b> and <b>free</b> time tracker. It allows you to track how much time you spend on various things,
+                        analyze it and shows how to improve it.
+                    </p>
+                </div>
                 <h3>Can I use it to track my commercial work?</h3>
-                <p>Yes.</p>
-                <h3>What will you do with my data?</h3>
+                <div class="faq-box">
+                    <p>Feel free to do it. I use it to track my freelance work.</p>
+                </div>
+                <h3>Do you use my time data for marketing / spying / other purposes?</h3>
+                <div class="faq-box">
                 <p>
-                    Nothing. No data has been sent to me. All data you've entered was saved in your web browser.
+                    No, time tracked by this application does not leave your computer.
                 </p>
+                </div>
             </div>
             <div class="tab-pane" id="settings">
                 // import / export

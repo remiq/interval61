@@ -105,11 +105,11 @@ var Timeslot = Backbone.Model.extend({
         ,time_track: null
         ,project: ''
         ,feature: ''
+        ,rating: -1
     }
     ,formatString: "YYYY-MM-DD HH:mm:ss"
     ,_render: function ()
     {
-        var now = moment();
         var SECOND = 1000;
         var MINUTE = 60 * SECOND;
         var HOUR = MINUTE * 60;
@@ -133,7 +133,7 @@ var Timeslot = Backbone.Model.extend({
         }
         var time_string = hours + ':' + minutes + '.' + seconds;
 
-        var el = ich.timeslot({
+        return ich.timeslot({
             id: this.cid
             ,time_start: this.get("time_start").format(this.formatString)
             ,time_end: this.get("time_end").format(this.formatString)
@@ -141,7 +141,6 @@ var Timeslot = Backbone.Model.extend({
             ,feature: this.get("feature")
             ,time_track: time_string
         });
-        return el;
     }
     ,render: function ()
     {
@@ -224,6 +223,8 @@ var tt = {
     }
     ,addExistingTimeslot: function (time_slot)
     {
+        console.log(time_slot);
+        if (time_slot.attributes.rating > -1) return;
         time_slot.render();
     }
     ,refreshProjectsAndFeatures: function()
@@ -248,6 +249,12 @@ var tt = {
                 process(_.keys(tt.feature_list));
             }
         });
+    }
+    ,refreshGraph: function(graph_name)
+    {
+        $('#graph_tab').children().removeClass('active');
+        $('#graph_tab_'+graph_name).addClass('active');
+        $('#iframe-graph').attr('src', 'graph_' + graph_name + '.html')
     }
     ,loadLocal: function()
     {
@@ -373,6 +380,18 @@ var tt = {
         delete(tt.timeslots[cid]);
         this.saveLocal();
         return false;
+    }
+    ,clickArchive: function (cid, rating)
+    {
+        var time_slot = tt.timeslots[cid];
+        time_slot.attributes.rating = rating;
+        this.saveLocal();
+        $('#timeslot-'+cid).slideUp();
+    }
+    ,clickReport: function(pid)
+    {
+        // pobranie timeslotów zahaczających o dany okres
+
     }
     ,changeProject: function (cid, el)
     {

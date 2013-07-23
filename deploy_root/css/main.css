@@ -1,6 +1,13 @@
 body {
     background: url('../img/fabric_of_squares_dgray.png');
 }
+body.iframe {
+    background: url('../img/fabric_of_squares_gray.png');
+    height: 600px;
+}
+iframe {
+    border: 0px;
+}
 .nav-main {
     margin-bottom: 0px;
 }
@@ -9,6 +16,7 @@ body {
     background: url('../img/fabric_of_squares_gray.png');
     border: 1px solid #DDDDDD;
     border-top: 0px;
+    min-height: 400px;
 }
 .nav-main .active a {
     background: url('../img/fabric_of_squares_gray.png');
@@ -123,4 +131,40 @@ a:focus, .btn:focus {
     position: absolute;
     top: -42px;
     right: -4px;
+}
+.bar {
+    fill: #33b5e5;
+}
+
+.bar-rating-none {
+    fill: gray;
+}
+
+.bar-rating-1 {
+    fill: #FF1800;
+}
+.bar-rating-2 {
+    fill: #FF9200;
+}
+.bar-rating-3 {
+    fill: #FFD500;
+}
+.bar-rating-0 {
+    fill: #FFD500;
+}
+.bar-rating-4 {
+    fill: #C6F500;
+}
+.bar-rating-5 {
+    fill: #14D100;
+}
+.tab-record-footer
+{
+    border-top: 1px dashed #DDDDDD;
+    height: 120px;
+    padding: 15px;
+}
+.faq-box
+{
+    padding: 15px;
 }
