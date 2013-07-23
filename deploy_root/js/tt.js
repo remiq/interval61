@@ -107,7 +107,7 @@ var Timeslot = Backbone.Model.extend({
         ,feature: ''
         ,rating: -1
     }
-    ,formatString: "YYYY-MM-DD HH:mm:ss"
+    ,formatString: "YYYY-MM-DD[&nbsp;]HH:mm:ss"
     ,_render: function ()
     {
         var time_string = this.getTimeTracked();
@@ -131,12 +131,12 @@ var Timeslot = Backbone.Model.extend({
         var element = this._render();
         $('#timeslot-'+this.cid).html(element.html());
     }
-    ,getTimeTracked: function()
+    ,getTimeTracked: function(time_track)
     {
         var SECOND = 1000;
         var MINUTE = 60 * SECOND;
         var HOUR = MINUTE * 60;
-        var time_track = this.get("time_track");
+        if (!time_track) time_track = this.get("time_track");
         var hours = Math.floor(time_track / HOUR);
         time_track -= hours * HOUR;
         var minutes = Math.floor(time_track / MINUTE);
@@ -164,7 +164,15 @@ var Timeslot = Backbone.Model.extend({
         ret += '<b>Started:&nbsp;</b>'+moment(this.get("time_start")).format(this.formatString)+'<br>';
         ret += '<b>Ended:&nbsp;</b>'+moment(this.get("time_end")).format(this.formatString)+'<br>';
         ret += '<b>Tracked:&nbsp;</b>'+this.getTimeTracked()+'<br>';
-        ret += '<b>Rating:&nbsp;</b>'+this.get("rating")+'<br>';
+        var rating = '';
+        var rating_int = this.get("rating");
+        if (rating_int == 1) rating = '<i class="icon-star"></i>';
+        if (rating_int == 2) rating = '<i class="icon-star"></i><i class="icon-star"></i>';
+        if (rating_int == 3) rating = '<i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i>';
+        if (rating_int == 4) rating = '<i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i>';
+        if (rating_int == 5) rating = '<i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i>';
+
+        if (rating) ret += '<b>Rating:&nbsp;</b>'+rating+'<br>';
         return ret;
     }
 });
@@ -237,7 +245,6 @@ var tt = {
     }
     ,addExistingTimeslot: function (time_slot)
     {
-        console.log(time_slot);
         if (time_slot.attributes.rating > -1) return;
         time_slot.render();
     }

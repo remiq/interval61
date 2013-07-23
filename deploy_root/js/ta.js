@@ -9,7 +9,6 @@ var ta = {
         // console.log(timeEnd);
         var time_box = [];
         _.each(ta.time_slots, function(ts) {
-            console.log(ts);
             if (ta.isBetween(ts.attributes.time_start, timeStart, timeEnd) || ta.isBetween(ts.attributes.time_end, timeStart, timeEnd))
             {
                 time_box.push(ts);
@@ -27,7 +26,16 @@ var ta = {
                 ,status: ts.attributes.rating
             };
             tasks.push(task);
-            if (!taskProjects[ts.attributes.project]) taskProjects[ts.attributes.project] = 1;
+            if (!taskProjects[ts.attributes.project]) taskProjects[ts.attributes.project] = 0;
+            taskProjects[ts.attributes.project] += ts.get("time_track");
+        });
+        var taskTypes = _.keys(taskProjects);
+        taskTypes = [];
+        _.each(tasks, function(task) {
+            var ts = new Timeslot();
+            var taskName = task.taskName + "\n" + ts.getTimeTracked(taskProjects[task.taskName]);
+            task.taskName = taskName;
+            taskTypes.push(taskName);
         });
         var taskStatus = {
             "-1": 'bar-rating-none'
@@ -38,7 +46,7 @@ var ta = {
             ,4: 'bar-rating-4'
             ,5: 'bar-rating-5'
         };
-        var gantt = d3.gantt().taskTypes(_.keys(taskProjects)).taskStatus(taskStatus);
+        var gantt = d3.gantt().taskTypes(taskTypes).taskStatus(taskStatus);
         gantt.timeDomainMode("fixed").timeDomain([timeStart, timeEnd]);
         gantt(tasks);
     }
