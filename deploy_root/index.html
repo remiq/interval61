@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>TimeTracker</title>
+    <title>Interval61: Simple Time Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -59,7 +59,7 @@
 </script>
 <script id="timeslot" type="text/html">
     <tr id="timeslot-{{ id }}" style="display: none;">
-        <td class="timeslot-col-accept">
+        <td class="timeslot-col-accept stage-archive">
             <div class="btn-group">
                 <button class="btn link-archive" onclick="return tt.clickArchive('{{ id }}', 0);"><i class="icon-book"></i> Archive</button>
                 <button class="btn dropdown-toggle" data-toggle="dropdown">
@@ -86,6 +86,7 @@
                     </a></li>
                 </ul>
             </div>
+            <span class="tutorial-archive tutorial-star"><i class="icon-star"></i></span>
         </td>
         <td class="timeslot-col-time-start">{{ time_start }}</td>
         <td class="timeslot-col-time-end">{{ time_end }}</td>
@@ -140,9 +141,15 @@
     <div class="tabbable" style="position: relative">
         <ul class="nav nav-tabs nav-main">
             <li class="active"><a href="#tracker" data-toggle="tab"><i class="icon-time"></i><span class="nav-main-label"> Record</span></a></li>
-            <li><a href="#reports" data-toggle="tab" onclick="return tt.refreshGraph('this_day');"><i class="icon-tasks"></i><span class="nav-main-label"> Analyze</span></a></li>
+            <li class="stage-analyze">
+                <a href="#reports" data-toggle="tab" onclick="return tt.refreshGraph('this_day');">
+                    <i class="icon-tasks"></i><span class="nav-main-label"> Analyze</span>
+                    <span class="tutorial-analyze tutorial-star"><i class="icon-star"></i></span>
+                </a>
+
+            </li>
             <li style="display: none;"><a href="#settings" data-toggle="tab"><i class="icon-cog"></i><span class="nav-main-label"> Settings</span></a></li>
-            <li><a href="#faq" data-toggle="tab"><i class="icon-question-sign"></i><span class="nav-main-label"> About</span></a></li>
+            <li><a href="#faq" data-toggle="tab"><i class="icon-question-sign"></i><span class="nav-main-label"> About Interval61</span></a></li>
         </ul>
         <div class="logo">
             <img src="img/logo.png" height="80">
@@ -161,6 +168,11 @@
                     </div>
                 </div>
                 <div style="clear: both; height: 0px;">&nbsp;</div>
+                <div class="alert alert-info tutorial-analyze">
+                    <button class="close" data-dismiss="alert" type="button" onclick="return tt.setConfig('tutorial_01_analyze', true);">×</button>
+                    <i class="icon-star"></i> <strong>Analyze how you spend your time!</strong>
+                    You can now check time reports based on time tracked in the app. Just click on "<strong>Analyze</strong>" tab.
+                </div>
                 <div id="timers">
                     <!-- Timers -->
                     <div class="demo alert alert-info">
@@ -170,11 +182,18 @@
                 </div>
                 <div>
                     <div id="modal"></div>
+                    <div class="alert alert-info tutorial-archive">
+                        <button class="close" data-dismiss="alert" type="button" onclick="return tt.setConfig('tutorial_02_archive', true);">×</button>
+                        <i class="icon-star"></i> <strong>Rate and archive old time logs!</strong><br>
+                        Don't clutter your workspace with an old time-logs. You can archive them by clicking "<strong>Archive</strong>" button.
+                        If you think that you've spent that time really well (or badly), click "<span class="caret" style="margin-top: 5px"></span>" and rate it.
+                        They will be colored as green (good) or red (bad) on Analyze graph.
+                    </div>
                     <!-- Logged time slots -->
                     <table class="table table-hover">
                         <thead>
                         <tr>
-                            <th>&nbsp;</th>
+                            <th class="stage-archive">&nbsp;</th>
                             <th class="timeslot-col-time-start">Time started</th>
                             <th class="timeslot-col-time-end">Time ended</th>
                             <th>Project</th>
@@ -191,9 +210,9 @@
                         </tr>
                         </tbody>
                     </table>
-                    <div class="tab-record-footer">
+                    <div class="tab-record-footer stage-archive">
                         <!-- place some text here -->
-                        <p>Archived time slots are in your browser memory for one month.</p>
+                        <p>Archived time-logs are in your browser memory for one month.</p>
                     </div>
                 </div>
             </div>

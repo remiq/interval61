@@ -179,6 +179,7 @@ var Timeslot = Backbone.Model.extend({
 var tt = {
     timers: {}
     ,timeslots: {}
+    ,configs: {}
     ,timer_active: null
     ,project_list: {}
     ,feature_list: {}
@@ -306,15 +307,68 @@ var tt = {
                 tt.addExistingTimeslot(time_slot);
             });
         }
+        var default_configs = {
+            test: false
+            ,stage_01_analyze: false
+            ,tutorial_01_analyze: false
+            ,stage_02_archive: false
+            ,tutorial_02_archive: false
+        };
+        if (localStorage['configs'])
+        {
+            var configs = JSON.parse(localStorage['configs']);
+
+            _.each(_.keys(default_configs), function(config_key) {
+                if (!configs[config_key])
+                {
+                    console.log("Missing config_key: "+config_key);
+                    configs[config_key] = default_configs[config_key];
+                }
+            });
+            tt.configs = configs;
+        } else {
+            tt.configs = default_configs;
+        }
         if (!localStorage['timers'] && !localStorage['timeslots'])
         {
             tt.startDemo();
+        }
+        // gamification
+        if (!tt.configs.stage_01_analyze && _.size(tt.timeslots) > 5)
+        {
+            tt.configs.stage_01_analyze = true;
+        }
+        if (tt.configs.stage_01_analyze)
+        {
+            $('.stage-analyze').show();
+            if (!tt.configs.tutorial_01_analyze)
+            {
+                $('.tutorial-analyze').show();
+            }
+        }
+        if (!tt.configs.stage_02_archive && _.size(tt.timeslots) > 10)
+        {
+            tt.configs.stage_02_archive = true;
+        }
+        if (tt.configs.stage_02_archive)
+        {
+            $('.stage-archive').show();
+            if (!tt.configs.tutorial_02_archive)
+            {
+                $('.tutorial-archive').show();
+            }
         }
     }
     ,saveLocal: function()
     {
         localStorage['timers'] = JSON.stringify(tt.timers);
         localStorage['timeslots'] = JSON.stringify(tt.timeslots);
+        localStorage['configs'] = JSON.stringify(tt.configs);
+    }
+    ,setConfig: function(key, value)
+    {
+        tt.configs[key] = value;
+        tt.saveLocal();
     }
     ,startDemo: function()
     {
