@@ -1,6 +1,8 @@
 /**
  * @author Dimitry Kudrayvtsev
  * @version 2.1
+ *
+ * extended by Remigiusz Jackowski
  */
 
 d3.gantt = function() {
@@ -71,7 +73,10 @@ d3.gantt = function() {
 	
 	initTimeDomain(tasks);
 	initAxis();
-	
+
+    var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 	var svg = d3.select("body")
 	.append("svg")
 	.attr("class", "chart")
@@ -86,12 +91,25 @@ d3.gantt = function() {
       svg.selectAll(".chart")
 	 .data(tasks, keyFunction).enter()
 	 .append("rect")
-	 .attr("rx", 5)
-         .attr("ry", 5)
+	 .attr("rx", 0)
+         .attr("ry", 0)
 	 .attr("class", function(d){ 
 	     if(taskStatus[d.status] == null){ return "bar";}
 	     return taskStatus[d.status];
-	     }) 
+	     })
+     .on("mouseover", function(d) {
+        tooltip.transition()
+            .duration(100)
+            .style("opacity", 1);
+        tooltip.html(d.taskDescription)
+            .style("left", (d3.event.pageX)+"px")
+            .style("top", (d3.event.pageY - 28) + "px");
+     })
+     .on("mouseout", function(d) {
+              tooltip.transition()
+                  .duration(100)
+                  .style("opacity", 0);
+          })
 	 .attr("y", 0)
 	 .attr("transform", rectTransform)
 	 .attr("height", function(d) { return y.rangeBand(); })

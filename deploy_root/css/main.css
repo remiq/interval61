@@ -168,3 +168,12 @@ a:focus, .btn:focus {
 {
     padding: 15px;
 }
+.tooltip
+{
+    background: url('../img/fabric_of_squares_gray.png');
+    border: 1px solid #DDDDDD;
+    position: absolute;
+    text-align: left;
+    padding: 10px;
+    pointer-events: none;
+}

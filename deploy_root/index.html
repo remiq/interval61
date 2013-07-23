@@ -140,7 +140,7 @@
     <div class="tabbable" style="position: relative">
         <ul class="nav nav-tabs nav-main">
             <li class="active"><a href="#tracker" data-toggle="tab"><i class="icon-time"></i><span class="nav-main-label"> Record</span></a></li>
-            <li><a href="#reports" data-toggle="tab" onclick="return tt.refreshGraph('daily');"><i class="icon-book"></i><span class="nav-main-label"> Analyze</span></a></li>
+            <li><a href="#reports" data-toggle="tab" onclick="return tt.refreshGraph('this_day');"><i class="icon-tasks"></i><span class="nav-main-label"> Analyze</span></a></li>
             <li style="display: none;"><a href="#settings" data-toggle="tab"><i class="icon-cog"></i><span class="nav-main-label"> Settings</span></a></li>
             <li><a href="#faq" data-toggle="tab"><i class="icon-question-sign"></i><span class="nav-main-label"> About</span></a></li>
         </ul>
@@ -202,13 +202,15 @@
             </div>
             <div class="tab-pane" id="reports">
                 <ul id="graph_tab" class="nav nav-tabs nav-main">
-                    <li id="graph_tab_daily" class="active"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('daily');">Today</a></li>
-                    <li id="graph_tab_weekly"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('weekly');">This week</a></li>
-                    <li id="graph_tab_monthly"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('monthly');">This month</a></li>
+                    <li id="graph_tab_this_day" class="active"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('this_day');">Today</a></li>
+                    <li id="graph_tab_this_day" class="active"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('prev_day');">Yesterday</a></li>
+                    <li id="graph_tab_this_week"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('this_week');">This week</a></li>
+                    <li id="graph_tab_prev_week"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('prev_week');">Last week</a></li>
+                    <li id="graph_tab_this_month"><a href="#" data-toggle="tab" onclick="return tt.refreshGraph('this_month');">This month</a></li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active">
-                        <iframe id="iframe-graph" src="graph_daily.html" width="800" height="600" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+                        <iframe id="iframe-graph" src="" width="800" height="600" marginwidth="0" marginheight="0" scrolling="no"></iframe>
                     </div>
                 </div>
             </div>

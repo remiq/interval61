@@ -23,7 +23,7 @@ var ta = {
                 startDate: ts.attributes.time_start
                 ,endDate: ts.attributes.time_end
                 ,taskName: ts.attributes.project
-                ,taskDescription: ts.attributes.feature
+                ,taskDescription: ts.getDescription()
                 ,status: ts.attributes.rating
             };
             tasks.push(task);
@@ -39,7 +39,7 @@ var ta = {
             ,5: 'bar-rating-5'
         };
         var gantt = d3.gantt().taskTypes(_.keys(taskProjects)).taskStatus(taskStatus);
-        //gantt.timeDomainMode("fixed").timeDomain([timeStart, timeEnd]);
+        gantt.timeDomainMode("fixed").timeDomain([timeStart, timeEnd]);
         gantt(tasks);
     }
     ,isBetween: function(time_checked, time_start, time_end)

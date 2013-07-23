@@ -110,6 +110,29 @@ var Timeslot = Backbone.Model.extend({
     ,formatString: "YYYY-MM-DD HH:mm:ss"
     ,_render: function ()
     {
+        var time_string = this.getTimeTracked();
+        return ich.timeslot({
+            id: this.cid
+            ,time_start: this.get("time_start").format(this.formatString)
+            ,time_end: this.get("time_end").format(this.formatString)
+            ,project: this.get("project")
+            ,feature: this.get("feature")
+            ,time_track: time_string
+        });
+    }
+    ,render: function ()
+    {
+        var element = this._render();
+        $('#timeslots').prepend(element);
+        $('#timeslot-'+this.cid).slideDown();
+    }
+    ,renderUpdate: function ()
+    {
+        var element = this._render();
+        $('#timeslot-'+this.cid).html(element.html());
+    }
+    ,getTimeTracked: function()
+    {
         var SECOND = 1000;
         var MINUTE = 60 * SECOND;
         var HOUR = MINUTE * 60;
@@ -131,27 +154,18 @@ var Timeslot = Backbone.Model.extend({
         {
             seconds = '0'+seconds;
         }
-        var time_string = hours + ':' + minutes + '.' + seconds;
-
-        return ich.timeslot({
-            id: this.cid
-            ,time_start: this.get("time_start").format(this.formatString)
-            ,time_end: this.get("time_end").format(this.formatString)
-            ,project: this.get("project")
-            ,feature: this.get("feature")
-            ,time_track: time_string
-        });
+        return hours + ':' + minutes + '.' + seconds;
     }
-    ,render: function ()
+    ,getDescription: function()
     {
-        var element = this._render();
-        $('#timeslots').prepend(element);
-        $('#timeslot-'+this.cid).slideDown();
-    }
-    ,renderUpdate: function ()
-    {
-        var element = this._render();
-        $('#timeslot-'+this.cid).html(element.html());
+        var ret = '';
+        ret += '<b>Project:&nbsp;</b>'+this.get("project")+'<br>';
+        ret += '<b>Feature:&nbsp;</b>'+this.get("feature")+'<br>';
+        ret += '<b>Started:&nbsp;</b>'+moment(this.get("time_start")).format(this.formatString)+'<br>';
+        ret += '<b>Ended:&nbsp;</b>'+moment(this.get("time_end")).format(this.formatString)+'<br>';
+        ret += '<b>Tracked:&nbsp;</b>'+this.getTimeTracked()+'<br>';
+        ret += '<b>Rating:&nbsp;</b>'+this.get("rating")+'<br>';
+        return ret;
     }
 });
 var tt = {
