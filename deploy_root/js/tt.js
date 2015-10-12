@@ -77,6 +77,7 @@ var Timer = Backbone.Model.extend({
         {
             time_tracked += time_diff;
         }
+        var time_tracked_all = time_tracked;
         var hours = Math.floor(time_tracked / HOUR);
         time_tracked -= hours * HOUR;
         var minutes = Math.floor(time_tracked / MINUTE);
@@ -96,6 +97,11 @@ var Timer = Backbone.Model.extend({
         }
         var time_string = hours + ':' + minutes + '.' + seconds;
         $('#timer-'+this.cid+' .form-counter').val(time_string);
+        // TODO: ugly
+        bell_period = 15 * MINUTE;
+        if ((time_tracked_all % bell_period) < 1000) {
+          tt.ring();
+        }
     }
 });
 var Timeslot = Backbone.Model.extend({
@@ -183,6 +189,7 @@ var tt = {
     ,timer_active: null
     ,project_list: {}
     ,feature_list: {}
+    ,bell_timer: null
     ,onLoad: function()
     {
         this.loadLocal();
@@ -258,6 +265,7 @@ var tt = {
             tt.feature_list[timeslot.get("feature")] = 1;
         });
         tt.refreshTypeahead();
+        tt.refreshBell();
     }
     ,refreshTypeahead: function()
     {
@@ -277,6 +285,17 @@ var tt = {
         $('#graph_tab').children().removeClass('active');
         $('#graph_tab_'+graph_name).addClass('active');
         $('#iframe-graph').attr('src', 'graph_' + graph_name + '.html')
+    }
+    ,refreshBell: function()
+    {
+      $('#bell')[0].className = (tt.configs.bell ? "btn active" : "btn");
+    }
+    ,ring: function()
+    {
+      if (tt.configs.bell) {
+        var audio = new Audio('mp3/271370__inoshirodesign__singing-bowl-strike-sound.mp3');
+        audio.play();
+      }
     }
     ,loadLocal: function()
     {
@@ -313,6 +332,7 @@ var tt = {
             ,tutorial_01_analyze: false
             ,stage_02_archive: false
             ,tutorial_02_archive: false
+            ,bell: false
         };
         if (localStorage['configs'])
         {
@@ -467,6 +487,13 @@ var tt = {
     {
         // pobranie timeslotów zahaczających o dany okres
 
+    }
+    ,clickBell: function()
+    {
+      tt.configs.bell = ! tt.configs.bell;
+      tt.ring();
+      tt.saveLocal();
+      tt.refreshBell()
     }
     ,changeProject: function (cid, el)
     {
